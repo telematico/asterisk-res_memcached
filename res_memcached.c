@@ -471,7 +471,9 @@ static int mcd_read(struct ast_channel *chan,
 
 	memcached_return_t mcdret; size_t szmcdval; uint32_t mcdflags;
 	char *mcdval = memcached_get(mcd, key, strlen(key), &szmcdval, &mcdflags, &mcdret);
-	if (mcdret)
+	if (mcdret == MEMCACHED_NOTFOUND)
+		ast_log(LOG_DEBUG, "MCD() Variable %s not found in cache \n", key);
+	else if (mcdret)
 		ast_log(LOG_WARNING, 
 			"MCD() error %d: %s\n", mcdret, memcached_strerror(mcd, mcdret)
 		);
@@ -483,6 +485,10 @@ static int mcd_read(struct ast_channel *chan,
 				(int)szmcdval, MAX_ASTERISK_VARLEN
 			);
 			mcd_set_operation_result(chan, MEMCACHED_VALUE_TOO_LONG);
+		} else if ( szmcdval == 0 ) {
+			ast_log(LOG_DEBUG, 
+				"returned value is (%d bytes) return empty string\n", (int)szmcdval );
+				ast_copy_string(buffer, "", buflen);
 		} else
 			ast_copy_string(buffer, mcdval, buflen);
 	}
