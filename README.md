@@ -200,11 +200,14 @@ appropriate integer value.
 
 author, licensing and credits
 -----------------------------
+Author:
 
 Radu Maierean
 radu dot maierean at gmail
-
 Copyright (c) 2010 Radu Maierean
+
+Credits:
+- Carlos Oliva (telematico at gmail) -> bugfix and adapt code to new asterisk versions
 
 the __res_memcached__ module is distributed under the GNU General Public License version 2. The GPL 
 (version 2) is included in this source tree in the file COPYING.
