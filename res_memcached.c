@@ -41,9 +41,12 @@
 	<support_level>core</support_level>
 ***/
 
+#include <stdlib.h>
+#include <libmemcached-1.0/memcached.h>
+#include <libmemcachedutil-1.0/util.h>
+
 #include "asterisk.h"
 
-ASTERISK_FILE_VERSION(__FILE__, "$Revision: 200656 $")
 
 #include "asterisk/file.h"
 #include "asterisk/channel.h"
@@ -52,9 +55,6 @@ ASTERISK_FILE_VERSION(__FILE__, "$Revision: 200656 $")
 #include "asterisk/app.h"
 #include "asterisk/utils.h"
 
-#include <stdlib.h>
-#include <libmemcached-1.0/memcached.h>
-#include <libmemcachedutil-1.0/util.h>
 
 /*** DOCUMENTATION
 	<function name="MCD" language="en_US">
@@ -464,7 +464,7 @@ static int mcd_read(struct ast_channel *chan,
 	if (ast_strlen_zero(parse)) {
 		ast_log(LOG_WARNING, "MCD requires argument (key)\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		return 0;
 	}
 	strcpy(key, parse);
@@ -486,7 +486,7 @@ static int mcd_read(struct ast_channel *chan,
 		} else
 			ast_copy_string(buffer, mcdval, buflen);
 	}
-	free(key);
+	ast_free(key);
 	memcached_pool_release(mcdpool, mcd);
 	return 0;
 
@@ -512,7 +512,7 @@ static int mcd_write(
 	if (ast_strlen_zero(parse)) {
 		ast_log(LOG_WARNING, "MCD() requires argument (key)\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		return 0;
 	}
 	strcpy(key, parse);
@@ -538,7 +538,7 @@ static int mcd_write(
 		);
 
 	mcd_set_operation_result(chan, mcdret);
-	free(key);
+	ast_free(key);
 	memcached_pool_release(mcdpool, mcd);
 	return 0;
 
@@ -566,7 +566,7 @@ static int mcdget_exec(struct ast_channel *chan, const char *data) {
 	if (ast_strlen_zero(data)) {
 		ast_log(LOG_WARNING, "app mcdget requires arguments (varname,key)\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		memcached_pool_release(mcdpool, mcd);
 		return 0;
 	}
@@ -576,7 +576,7 @@ static int mcdget_exec(struct ast_channel *chan, const char *data) {
 	if (ast_strlen_zero(args.key)) {
 		ast_log(LOG_WARNING, "key needed\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		memcached_pool_release(mcdpool, mcd);
 		return 0;
 	}
@@ -586,7 +586,7 @@ static int mcdget_exec(struct ast_channel *chan, const char *data) {
 	if (ast_strlen_zero(args.varname)) {
 		ast_log(LOG_WARNING, "a valid dialplan variable name is needed as first argument\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		memcached_pool_release(mcdpool, mcd);
 		return 0;
 	}
@@ -611,7 +611,7 @@ static int mcdget_exec(struct ast_channel *chan, const char *data) {
 		} else
 			pbx_builtin_setvar_helper(chan, args.varname, mcdval);
 	}
-	free(key);
+	ast_free(key);
 	memcached_pool_release(mcdpool, mcd);
 	return 0;
 }
@@ -637,7 +637,7 @@ static void mcd_putdata(const char *cmd, struct ast_channel *chan, const char *d
 	if (ast_strlen_zero(data)) {
 		ast_log(LOG_WARNING, "app mcd%s requires arguments (key,value)\n", cmd);
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		memcached_pool_release(mcdpool, mcd);
 		return;
 	}
@@ -647,7 +647,7 @@ static void mcd_putdata(const char *cmd, struct ast_channel *chan, const char *d
 	if (ast_strlen_zero(args.key)) {
 		ast_log(LOG_WARNING, "key needed\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		memcached_pool_release(mcdpool, mcd);
 		return;
 	}
@@ -693,7 +693,7 @@ static void mcd_putdata(const char *cmd, struct ast_channel *chan, const char *d
 		);
 
 	mcd_set_operation_result(chan, mcdret);
-	free(key);
+	ast_free(key);
 	memcached_pool_release(mcdpool, mcd);
 	return;
 
@@ -740,7 +740,7 @@ static int mcddelete_exec(struct ast_channel *chan, const char *data) {
 	if (ast_strlen_zero(data)) {
 		ast_log(LOG_WARNING, "app mcddelete requires argument (key)\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		memcached_pool_release(mcdpool, mcd);
 		return 0;
 	}
@@ -750,7 +750,7 @@ static int mcddelete_exec(struct ast_channel *chan, const char *data) {
 	if (ast_strlen_zero(args.key)) {
 		ast_log(LOG_WARNING, "key needed\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		memcached_pool_release(mcdpool, mcd);
 		return 0;
 	}
@@ -763,7 +763,7 @@ static int mcddelete_exec(struct ast_channel *chan, const char *data) {
 			"memcached_delete() error %d: %s\n", mcdret, memcached_strerror(mcd, mcdret)
 		);
 	mcd_set_operation_result(chan, mcdret);
-	free(key);
+	ast_free(key);
 	memcached_pool_release(mcdpool, mcd);
 	return 0;
 
@@ -798,7 +798,7 @@ static int mcdcounter_read(
 	if (ast_strlen_zero(parse)) {
 		ast_log(LOG_WARNING, "MCDCOUNTER() requires arguments (key[,increment])\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		memcached_pool_release(mcdpool, mcd);
 		return 0;
 	}
@@ -808,7 +808,7 @@ static int mcdcounter_read(
 	if (!ast_strlen_zero(args.key)) {
 		ast_log(LOG_WARNING, "key needed\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		memcached_pool_release(mcdpool, mcd);
 		return 0;
 	}
@@ -836,7 +836,7 @@ static int mcdcounter_read(
 		ast_asprintf(&newvalstr, "%d", (int)newval);
 		ast_copy_string(buffer, newvalstr, buflen);
 	}
-	free(key);
+	ast_free(key);
 	memcached_pool_release(mcdpool, mcd);
 	return 0;
 
@@ -867,7 +867,7 @@ static int mcdcounter_write(
 	if (ast_strlen_zero(parse)) {
 		ast_log(LOG_WARNING, "MCDCOUNTER() requires argument (key)\n");
 		mcd_set_operation_result(chan, MEMCACHED_ARGUMENT_NEEDED);
-		free(key);
+		ast_free(key);
 		memcached_pool_release(mcdpool, mcd);
 		return 0;
 	}
@@ -897,7 +897,7 @@ static int mcdcounter_write(
 			"memcached_increment_with_initial() error %d: %s\n", mcdret, memcached_strerror(mcd, mcdret)
 		);
 	mcd_set_operation_result(chan, mcdret);
-	free(key);
+	ast_free(key);
 	memcached_pool_release(mcdpool, mcd);
 	return 0;
 
