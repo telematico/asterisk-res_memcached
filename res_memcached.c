@@ -433,6 +433,22 @@ static int mcd_load_config(void) {
 		strcat(mcd_config, kp);
 		strcat(mcd_config, " ");
 	}
+	
+	const char *pmin;
+	if ((pmin = ast_variable_retrieve(cfg, "general", "poolmin"))) {
+		strcat(mcd_config, "--POOL-MIN=");
+		strcat(mcd_config, pmin);
+		strcat(mcd_config, " ");
+	}
+
+	const char *pmax;
+	if ((pmax = ast_variable_retrieve(cfg, "general", "poolmax"))) {
+		strcat(mcd_config, "--POOL-MAX=");
+		strcat(mcd_config, pmax);
+		strcat(mcd_config, " ");
+	}
+
+    	//strcat(mcd_config, "--POOL-MIN=20 --POOL-MAX=50 ");
 
     // launch memcached client (pool of)
     mcd_config[strlen(mcd_config) - 1] = 0;

@@ -18,7 +18,8 @@ server=localhost:11211                ; multiple 'server=' entries will create a
 ;server=memcache.server.com:11211     ;   each entry is in the form host[:port], host being a fqdn or an ip address,
                                       ;   the default memcached port is 11211. if no entries, the module will at
                                       ;   least attempt to connect to a memcached running on the localhost
-
+poolmin=20				; minimum value toi mantain connec ions in pool (will open only if needed)
+poolmax=50				; max value tu mantain connections in pool
 
 ;;;;;;;;;;;;;  UGLY NOTE ;;;;;;;;;;;;;;
 ; apparently, creating a memcached connection pool in libmemcached 1.0.4 fails 
